@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Panel SIG — Sistema Integrado de Gestión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1d2421;--mut:#667069;--bg:#f6f5f1;--card:#fff;--ac:#0f6e63;--warn:#b26a00;--bad:#b3261e;--ok:#2e7d4f;--line:#e2e0d8}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);display:flex;min-height:100vh}
+.side{width:250px;flex:none;background:#18211e;color:#d9e2de;padding:20px 14px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand strong{display:block;font-size:20px;color:#fff;letter-spacing:.5px}
+.brand span{font-size:12px;color:#9fb3ab}
+.side nav a{display:block;color:#d9e2de;text-decoration:none;padding:6px 10px;border-radius:6px;font-size:14px}
+.side nav a:hover,.side nav a.on{background:#27352f;color:#fff}
+.grp{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7f9a90;margin:16px 10px 4px}
+main{flex:1;min-width:0;padding:28px 34px;max-width:1240px}
+.vista{display:none}.vista.on{display:block}
+h1{font-size:24px;margin:0 0 4px}
+.lead{color:var(--mut);margin:0 0 18px;font-size:14px}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;background:#e3efec;color:#0b4f47;border:1px solid #c7e0da;margin:0 4px 4px 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin:16px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi b{display:block;font-size:26px;line-height:1.2}
+.kpi span{font-size:12px;color:var(--mut)}
+.kpi.warn b{color:var(--warn)}.kpi.bad b{color:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;margin:14px 0}
+.card h2{font-size:15px;margin:0 0 10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);background:#faf9f6;white-space:nowrap}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.form label{font-size:12px;color:var(--mut);display:flex;flex-direction:column;gap:4px}
+input,select,textarea{font:inherit;font-size:13px;padding:6px 8px;border:1px solid #cfccc2;border-radius:6px;background:#fff;color:var(--ink);width:100%}
+textarea{min-height:64px;resize:vertical}
+.btn{font:inherit;font-size:13px;padding:7px 14px;border-radius:6px;border:1px solid var(--ac);background:var(--ac);color:#fff;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.ghost{background:#fff;color:var(--ac)}
+.btn.danger{background:#fff;color:var(--bad);border-color:var(--bad)}
+.toolbar{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:6px 0}
+.empty,.note{color:var(--mut);font-size:13px}
+.empty{font-style:italic;padding:14px}
+.lvl{font-weight:600;padding:2px 8px;border-radius:4px;font-size:12px}
+.lvl.a{background:#f8dcd9;color:var(--bad)}.lvl.m{background:#fbeccc;color:var(--warn)}.lvl.b{background:#dbeedf;color:var(--ok)}
+.dot{color:var(--ac);font-weight:700;text-align:center}
+.mat td,.mat th{text-align:center}.mat td:first-child,.mat th:first-child{text-align:left}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.dafo textarea{min-height:170px}
+.alert{border-left:3px solid var(--warn);padding:6px 10px;background:#fff;margin:6px 0;font-size:13px;border-radius:0 6px 6px 0}
+.okmsg{font-size:13px;color:var(--ok)}
+.rs-root{--bg:#f3f5f6;--surface:#fff;--ink:#18242a;--muted:#5c6b72;--line:#dbe2e5;--accent:#0e5a6b;--warn:#c26a00;--warn-bg:#fdeed6;--bad:#c62f2f;--bad-bg:#fbe3e3;--ok:#2e7d4f;--ok-bg:#dff1e6;--fd:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;--fb:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--fm:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;display:grid;gap:18px;font-family:var(--fb);font-size:14px;line-height:1.45;color:var(--ink)}
+.rs-root h1,.rs-root h2{font-family:var(--fd);margin:0}
+.rs-root h1{font-size:26px;font-weight:700}
+.rs-root h2{font-size:17px;font-weight:600}
+.rs-head{border-bottom:3px solid var(--accent);padding-bottom:12px}
+.rs-sub{color:var(--muted);font-size:13px}
+.rs-panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:12px}
+.rs-phead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.rs-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.rs-root label{display:grid;gap:3px;font-size:11px;color:var(--muted)}
+.rs-root select,.rs-root input[type=search],.rs-root button{font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);width:auto}
+.rs-root select{min-width:170px}
+.rs-root input[type=search]{min-width:260px}
+.rs-root button{cursor:pointer}
+.rs-root button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.rs-root button:focus-visible,.rs-sede:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.rs-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.rs-kpi{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:8px;padding:10px 12px;display:grid;gap:2px}
+.rs-v{font-family:var(--fd);font-size:30px;font-weight:700;color:var(--c)}
+.rs-l{font-size:12px;color:var(--muted)}
+.rs-s{font-size:11px;color:var(--muted)}
+.rs-sedes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.rs-sede{all:unset;cursor:pointer;border:1px solid var(--line);border-top:5px solid var(--c);border-radius:8px;padding:12px;display:grid;gap:6px;background:var(--surface)}
+.rs-sede[aria-pressed=true]{box-shadow:0 0 0 2px var(--accent) inset}
+.rs-n{font-family:var(--fd);font-weight:600;font-size:15px}
+.rs-big{font-family:var(--fd);font-size:24px;font-weight:700;color:var(--c)}
+.rs-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--line)}
+.rs-bar span{display:block;height:100%}
+.rs-chips{display:flex;flex-wrap:wrap;gap:4px}
+.rs-chip{font-size:11px;font-weight:600;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.rs-legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
+.rs-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.rs-root svg{width:100%;height:auto;display:block}
+.rs-root table{border-collapse:collapse;width:100%}
+.rs-mx th,.rs-mx td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums}
+.rs-mx th:first-child,.rs-mx td:first-child{text-align:left;white-space:nowrap}
+.rs-mx thead th{color:var(--muted);font-weight:600;cursor:pointer}
+.rs-mx td.hi{background:color-mix(in srgb,var(--accent) 12%,transparent);font-weight:600}
+.rs-list th{position:sticky;top:0;background:var(--surface);text-align:left;font-size:12px;color:var(--muted);font-weight:600;border-bottom:2px solid var(--line);padding:8px;white-space:nowrap}
+.rs-list td{border-bottom:1px solid var(--line);padding:7px 8px;vertical-align:top;font-size:13px}
+.rs-list td.rs-num{text-align:right;font-variant-numeric:tabular-nums}
+.rs-id{font-family:var(--fm);font-size:12px;white-space:nowrap}
+.rs-pill{font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.rs-p-r{background:var(--warn-bg);color:var(--warn)}
+.rs-p-i{background:var(--bad-bg);color:var(--bad)}
+.rs-listwrap{overflow:auto;max-height:520px}
+.rs-note{font-size:12px;color:var(--muted)}
+.scroll{overflow:auto}
+@media(max-width:800px){body{display:block}.side{position:static;width:auto;height:auto}.grid2{grid-template-columns:1fr}main{padding:18px}}
+</style>
+</head>
+<body>
+
+<aside class="side">
+  <div class="brand"><strong>SIG</strong><span>Sistema Integrado de Gestión · ISO 9001 · 14001 · 45001 · 56001 · 19650</span></div>
+  <nav style="margin-top:14px">
+    <a href="#panel">Panel general</a>
+    <div class="grp">Ambiental y seguridad</div>
+    <a href="#indicadores">Indicadores · G19A</a>
+    <a href="#instalaciones">Instalaciones</a>
+    <a href="#extintores">Extintores y botiquines</a>
+    <a href="#residuos">Residuos</a>
+    <a href="#cae">Coordinación de actividades (CAE)</a>
+    <div class="grp">Gestión del sistema</div>
+    <a href="#nc">No conformidades</a>
+    <a href="#riesgos">Riesgos y oportunidades</a>
+    <a href="#dafo">DAFO</a>
+    <a href="#legales">Requisitos legales</a>
+    <a href="#documental">Control documental</a>
+    <div class="grp">Personas y comunicación</div>
+    <a href="#formacion">Formación</a>
+    <a href="#comunicacion">Comunicación</a>
+    <div class="grp">Información BIM</div>
+    <a href="#bim">ISO 19650</a>
+  </nav>
+</aside>
+
+<main>
+  <section id="v-panel" class="vista"></section>
+  <section id="v-indicadores" class="vista"></section>
+  <section id="v-instalaciones" class="vista"></section>
+  <section id="v-extintores" class="vista"></section>
+  <section id="v-residuos" class="vista"><div class="rs-root">
+<div class="rs-head"><h1>Residuos por sede</h1><div class="rs-sub">Archivo cronológico M11-A rev.2 · 309 registros (RES-0001 a RES-0304 y F-4 a F-8) · Tonelaje = columna «Cantidad (t)»</div></div>
+<section class="rs-panel"><div class="rs-filters">
+<label>Año<select id="rs-fYear"></select></label>
+<label>Sede<select id="rs-fSede"></select></label>
+<label>Tipo de residuo (LER)<select id="rs-fLer"></select></label>
+<label>Vista del gráfico<span style="display:flex;gap:6px"><button id="rs-gMes" class="on">Mes</button><button id="rs-gTri">Trimestre</button></span></label>
+</div></section>
+<section class="rs-kpis" id="rs-kpis"></section>
+<section class="rs-panel">
+<div class="rs-phead"><h2 id="rs-chartTitle">Toneladas por periodo y sede</h2><div class="rs-legend" id="rs-legend"></div></div>
+<div id="rs-chart"></div>
+</section>
+<section class="rs-panel">
+<h2>Sedes</h2>
+<div class="rs-sedes" id="rs-sedes"></div>
+<div class="rs-note">Pulsa una sede para filtrar todo el panel. Pulsa de nuevo para quitar el filtro.</div>
+</section>
+<section class="rs-panel">
+<h2>Matriz sede × tipo de residuo (t)</h2>
+<div class="rs-listwrap" id="rs-matrix"></div>
+<div class="rs-note">Pulsa un tipo de residuo para filtrar. Los valores se suman con el año seleccionado.</div>
+</section>
+<section class="rs-panel">
+<div class="rs-phead"><h2>Registros</h2><input type="search" id="rs-q" placeholder="Buscar ID, albarán, empresa, LER…"></div>
+<div class="rs-listwrap"><table class="rs-list" id="rs-list"></table></div>
+<div id="rs-more"></div>
+</section>
+</div></section>
+  <section id="v-cae" class="vista"></section>
+  <section id="v-nc" class="vista"></section>
+  <section id="v-riesgos" class="vista"></section>
+  <section id="v-dafo" class="vista"></section>
+  <section id="v-legales" class="vista"></section>
+  <section id="v-documental" class="vista"></section>
+  <section id="v-formacion" class="vista"></section>
+  <section id="v-comunicacion" class="vista"></section>
+  <section id="v-bim" class="vista"></section>
+</main>
+
+<script>
+const KEY='sig-panel-v1';
+const NORMAS=['9001','14001','45001','56001','19650'];
+const ESTADO_NC=['Abierta','En tratamiento','Pendiente verificar eficacia','Cerrada (validada)'];
+
+// Enlaces a las interfaces ya existentes: pegue aquí la URL de cada una.
+const ENLACES={nc:'https://claude.ai/artifact/LCC6WcfJbwrwKjJ4UjfoEE',legales:'https://claude.ai/artifact/EAgKanbfgTRXBGXhGpppqM',indicadores:'https://claude.ai/artifact/2neazJfr9TbfSqh3NtRnGC',instalaciones:'https://claude.ai/artifact/AXyRLuyvSgX5ZpSR6Yc15d',extintores:'https://claude.ai/artifact/AXyRLuyvSgX5ZpSR6Yc15d',residuos:'https://claude.ai/artifact/UDQdzxp3QtodLWa2qh1bzT',cae:'',bim:''};
+
+const ENL={
+  nc:{t:'No conformidades · Gestor G12',d:'Registro operativo de no conformidades: fichas, evidencias, análisis de causas e informe G12C.'},
+  legales:{t:'Requisitos legales · G16A',d:'Control de requisitos legales y reglamentarios (G16A / PRG-16), con evidencias de cumplimiento.'},
+  indicadores:{t:'Indicadores · cuadro de mando G19A',d:'Seguimiento de indicadores 2026 del SIG: datos de origen, metas y desviaciones.'},
+  instalaciones:{t:'Control de instalaciones de sedes',d:'Estado y revisiones de las instalaciones de Zaragoza, Cubelles, Montcada, Madrid, Vitoria y La Llacuna.'},
+  extintores:{t:'Control de extintores y botiquines',d:'Revisiones y reposiciones de equipos de emergencia y primeros auxilios.'},
+  cae:{t:'Coordinación de actividades empresariales (CAE)',d:'Solicitudes, seguimiento y control de empresas concurrentes.'},
+  bim:{t:'ISO 19650 · Gestión de la información BIM',d:'Checklist de auditoría interna ISO 19650-1/-2, roles BIM y cuestionario de capacidad de proveedores.'}
+};
+
+const MODULOS={
+  nc:{t:'No conformidades y acciones correctivas',
+    d:'Registro maestro de NC. Los estados siguen los criterios del registro; una NC solo pasa a "Cerrada" cuando la dirección lo valida.',
+    cols:[
+      {k:'codigo',t:'Nº NC',ph:'NC 2026-XXX'},
+      {k:'fecha',t:'Fecha',tipo:'date'},
+      {k:'origen',t:'Origen',sel:['Auditoría interna','Auditoría externa','Queja de cliente','Incidente','Seguimiento de proceso','Otro']},
+      {k:'norma',t:'Norma',sel:NORMAS},
+      {k:'clausula',t:'Cláusula',ph:'p. ej. 10.2'},
+      {k:'descripcion',t:'Descripción objetiva',area:1},
+      {k:'responsable',t:'Responsable'},
+      {k:'plazo',t:'Plazo',tipo:'date'},
+      {k:'estado',t:'Estado',sel:ESTADO_NC}]},
+  riesgos:{t:'Riesgos y oportunidades',nivel:1,
+    d:'Nivel = probabilidad × severidad (escala 1–5). Los umbrales de colores son provisionales: pendientes de validar con sus criterios.',
+    cols:[
+      {k:'codigo',t:'Código',ph:'R-001'},
+      {k:'tipo',t:'Tipo',sel:['Riesgo','Oportunidad']},
+      {k:'proceso',t:'Proceso / sede',ph:'Proceso o sede'},
+      {k:'norma',t:'Norma',sel:NORMAS},
+      {k:'descripcion',t:'Descripción',area:1},
+      {k:'prob',t:'Probabilidad (1–5)',tipo:'num',max:5},
+      {k:'sev',t:'Severidad (1–5)',tipo:'num',max:5},
+      {k:'tratamiento',t:'Tratamiento / acción',area:1},
+      {k:'responsable',t:'Responsable'},
+      {k:'revision',t:'Próxima revisión',tipo:'date'}]},
+  legales:{t:'Requisitos legales y reglamentarios',
+    d:'Obligaciones legales identificadas por ámbito. "Cumple" exige evidencia registrada; sin ella, el estado debe ser "Pendiente evidencias".',
+    cols:[
+      {k:'ambito',t:'Ámbito',sel:['Calidad','Ambiental','SST','Innovación','BIM','Otro']},
+      {k:'requisito',t:'Requisito',area:1},
+      {k:'referencia',t:'Referencia legal',ph:'Norma y artículo'},
+      {k:'organismo',t:'Organismo / ámbito territorial',ph:'Estatal, autonómico…'},
+      {k:'aplicable',t:'Aplicable',sel:['Sí','No']},
+      {k:'cumplimiento',t:'Cumplimiento',sel:['Pendiente evidencias','Cumple','No cumple','No aplicable']},
+      {k:'responsable',t:'Responsable'},
+      {k:'revision',t:'Próxima revisión',tipo:'date'}]},
+  documental:{t:'Control documental',
+    d:'Relación de documentos del SIG. Las entradas precargadas proceden de nombres de archivo del proyecto: verifique código, revisión y estado.',
+    cols:[
+      {k:'codigo',t:'Código'},
+      {k:'titulo',t:'Título'},
+      {k:'tipo',t:'Tipo',sel:['Procedimiento','Instrucción','Formulario','Registro','Plan','Política','Otro']},
+      {k:'revision',t:'Revisión',ph:'rev0'},
+      {k:'fecha',t:'Fecha revisión',tipo:'date'},
+      {k:'responsable',t:'Responsable'},
+      {k:'estado',t:'Estado',sel:['Vigente','En revisión','Por verificar','Obsoleto']}]},
+  formacion:{t:'Formación y competencia',
+    d:'Planificación y evaluación de la formación en procedimientos del SIG y en normas aplicables.',
+    cols:[
+      {k:'curso',t:'Curso / acción formativa'},
+      {k:'dirigido',t:'Dirigido a'},
+      {k:'norma',t:'Norma',sel:NORMAS},
+      {k:'fecha',t:'Fecha',tipo:'date'},
+      {k:'horas',t:'Horas',tipo:'num'},
+      {k:'asistentes',t:'Asistentes',tipo:'num'},
+      {k:'estado',t:'Estado',sel:['Planificada','Impartida','Evaluada']},
+      {k:'eficacia',t:'Evaluación de eficacia',area:1}]},
+  comunicacion:{t:'Comunicación',
+    d:'Plan de comunicación interna y externa del SIG: qué se comunica, a quién, por qué canal y quién es responsable.',
+    cols:[
+      {k:'asunto',t:'Asunto / mensaje'},
+      {k:'publico',t:'Destinatarios'},
+      {k:'canal',t:'Canal',sel:['Intranet','Email','Reunión','Tablón','Cartelería','Web','Otro']},
+      {k:'frecuencia',t:'Frecuencia',sel:['Puntual','Mensual','Trimestral','Semestral','Anual']},
+      {k:'norma',t:'Norma',sel:NORMAS},
+      {k:'fecha',t:'Fecha prevista',tipo:'date'},
+      {k:'responsable',t:'Responsable'},
+      {k:'estado',t:'Estado',sel:['Previsto','En curso','Realizado']}]}
+};
+
+const SEED={
+  documental:[
+    {codigo:'G12A',titulo:'Listado de no conformidades, observaciones y OM 2026',tipo:'Registro',revision:'rev2',estado:'Vigente'},
+    {codigo:'G12B',titulo:'Listado de quejas 2026',tipo:'Registro',revision:'rev0',estado:'Vigente'},
+    {codigo:'G12C',titulo:'Registro de no conformidad (plantilla)',tipo:'Formulario',revision:'rev0',estado:'Por verificar'},
+    {codigo:'PRG-09',titulo:'Solicitudes, ofertas y contratos',tipo:'Procedimiento',revision:'rev02',estado:'En revisión'},
+    {codigo:'P02T',titulo:'Cuestionario de capacidad BIM de proveedores',tipo:'Formulario',revision:'rev0',estado:'Por verificar'},
+    {codigo:'IG10D',titulo:'Cartas de asignación de roles BIM',tipo:'Formulario',revision:'rev0',estado:'Por verificar'},
+    {codigo:'9-FE-01',titulo:'Informe de auditoría interna',tipo:'Formulario',revision:'02',estado:'Por verificar'}],
+  formacion:[
+    {curso:'Procedimientos del SIG · versión perfiles técnicos',dirigido:'Perfiles técnicos',estado:'Planificada'},
+    {curso:'Procedimientos del SIG · versión responsables y directores',dirigido:'Responsables y directores',estado:'Planificada'}],
+  comunicacion:[
+    {asunto:'Plan anual de comunicación SIG 2027',publico:'Toda la organización',canal:'Intranet',frecuencia:'Anual',estado:'En curso'}]
+};
+
+let S={};
+try{S=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){S={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function rows(id){
+  if(!S[id]){S[id]=(SEED[id]||[]).map(r=>Object.assign({},r,{id:uid()}));save();}
+  return S[id];
+}
+function hoy(){return new Date().toISOString().slice(0,10)}
+function nivelNum(r){const n=Number(r.prob)*Number(r.sev);return n||0}
+function nivelHTML(r){const n=nivelNum(r);if(!n)return '<span class="note">—</span>';const c=n>=15?'a':n>=8?'m':'b';return '<span class="lvl '+c+'">'+n+'</span>'}
+
+function fieldHTML(c){
+  const span=c.area?' style="grid-column:1/-1"':'';
+  if(c.sel)return '<label'+span+'>'+c.t+'<select name="'+c.k+'"><option value="">—</option>'+c.sel.map(o=>'<option>'+esc(o)+'</option>').join('')+'</select></label>';
+  if(c.area)return '<label'+span+'>'+c.t+'<textarea name="'+c.k+'"></textarea></label>';
+  const type=c.tipo==='date'?'date':c.tipo==='num'?'number':'text';
+  return '<label>'+c.t+'<input type="'+type+'" name="'+c.k+'" placeholder="'+esc(c.ph||'')+'"'+(c.max?' min="1" max="'+c.max+'"':'')+'></label>';
+}
+function tableHTML(id){
+  const m=MODULOS[id],data=rows(id);
+  if(!data.length)return '<p class="empty">Sin registros todavía.</p>';
+  const head=m.cols.map(c=>'<th>'+c.t+'</th>').join('')+(m.nivel?'<th>Nivel</th>':'')+'<th></th>';
+  const body=data.map(r=>'<tr>'+m.cols.map(c=>'<td>'+esc(r[c.k])+'</td>').join('')+(m.nivel?'<td>'+nivelHTML(r)+'</td>':'')+
+    '<td><button class="btn ghost" data-del="'+id+'|'+r.id+'" style="padding:3px 8px">Eliminar</button></td></tr>').join('');
+  return '<table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table>';
+}
+function refresh(id){
+  const el=document.getElementById('tab-'+id);
+  if(el)el.innerHTML=tableHTML(id);
+  const c=document.getElementById('cnt-'+id);
+  if(c)c.textContent=rows(id).length+' registro(s)';
+}
+function csv(id){
+  const m=MODULOS[id],q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const out=[m.cols.map(c=>c.t).concat(m.nivel?['Nivel']:[]).map(q).join(';')];
+  rows(id).forEach(r=>out.push(m.cols.map(c=>r[c.k]).concat(m.nivel?[nivelNum(r)]:[]).map(q).join(';')));
+  return out.join('\n');
+}
+
+function vistaModulo(id){
+  const m=MODULOS[id];
+  return '<h1>'+m.t+'</h1><p class="lead">'+m.d+'</p>'+
+  '<div class="card"><h2>Nuevo registro</h2><form class="form" data-form="'+id+'">'+m.cols.map(fieldHTML).join('')+
+  '<div style="align-self:end"><button class="btn" type="submit">Añadir</button></div></form></div>'+
+  '<div class="toolbar"><span class="note" id="cnt-'+id+'"></span><button class="btn ghost" data-copy="'+id+'">Copiar como CSV</button></div>'+
+  '<div class="card scroll" style="padding:0"><div id="tab-'+id+'"></div></div>';
+}
+function vistaEnlace(id){
+  const e=ENL[id],url=ENLACES[id];
+  return '<h1>'+e.t+'</h1><p class="lead">'+e.d+'</p><div class="card"><h2>Interfaz existente</h2>'+
+  (url?'<a class="btn" href="'+esc(url)+'">Abrir interfaz</a>':'<p class="note">Enlace pendiente. Indique la URL de esta interfaz para vincularla desde este panel.</p>')+'</div>';
+}
+function vistaDafo(){
+  const d=S.dafo||{};
+  const cuad=[['f','Fortalezas (interno, favorable)'],['d','Debilidades (interno, desfavorable)'],['o','Oportunidades (externo, favorable)'],['a','Amenazas (externo, desfavorable)']];
+  return '<h1>DAFO</h1><p class="lead">Análisis interno y externo de la organización. Vincule cada elemento a una cuestión del contexto (cláusula 4.1 de ISO 9001, 14001 y 45001) y a los riesgos y oportunidades correspondientes.</p>'+
+  '<div class="grid2 dafo">'+cuad.map(([k,t])=>'<div class="card"><h2>'+t+'</h2><textarea data-dafo="'+k+'" placeholder="Una cuestión por línea">'+esc(d[k]||'')+'</textarea></div>').join('')+'</div>';
+}
+function vistaPanel(){
+  const nc=rows('nc'),ri=rows('riesgos'),lg=rows('legales'),dc=rows('documental'),fo=rows('formacion'),co=rows('comunicacion');
+  const abiertas=nc.filter(r=>/^(Abierta|En tratamiento)$/.test(r.estado)).length;
+  const vencidas=nc.filter(r=>r.plazo&&r.plazo<hoy()&&!/^Cerrada/.test(r.estado));
+  const eficacia=nc.filter(r=>r.estado==='Pendiente verificar eficacia');
+  const altos=ri.filter(r=>nivelNum(r)>=15).length;
+  const legPend=lg.filter(r=>r.cumplimiento==='Pendiente evidencias');
+  const docsRev=dc.filter(r=>/^(En revisión|Por verificar)$/.test(r.estado));
+  const formPlan=fo.filter(r=>r.estado==='Planificada').length;
+  const comPrev=co.filter(r=>r.estado!=='Realizado').length;
+  const kpi=(v,t,c)=>'<div class="kpi '+(c||'')+'"><b>'+v+'</b><span>'+t+'</span></div>';
+  const alertas=[]
+    .concat(vencidas.map(r=>'NC '+esc(r.codigo||'sin nº')+' con plazo vencido ('+esc(r.plazo)+') · '+esc(r.estado||'sin estado')))
+    .concat(eficacia.map(r=>'NC '+esc(r.codigo||'sin nº')+' pendiente de verificar eficacia'))
+    .concat(legPend.slice(0,5).map(r=>'Requisito legal pendiente de evidencias: '+esc((r.requisito||'').slice(0,90))))
+    .concat(docsRev.map(r=>'Documento '+esc(r.codigo)+' en estado "'+esc(r.estado)+'"'));
+  const mat=[
+    ['Indicadores (G19A)','indicadores',[1,1,1,1,0]],['Instalaciones','instalaciones',[1,1,1,0,0]],
+    ['Extintores y botiquines','extintores',[0,0,1,0,0]],['Residuos','residuos',[0,1,0,0,0]],
+    ['CAE','cae',[0,0,1,0,0]],['No conformidades','nc',[1,1,1,1,1]],['Riesgos y oportunidades','riesgos',[1,1,1,1,1]],
+    ['DAFO','dafo',[1,1,1,1,0]],['Requisitos legales','legales',[1,1,1,1,1]],['Control documental','documental',[1,1,1,1,1]],
+    ['Formación','formacion',[1,1,1,1,0]],['Comunicación','comunicacion',[1,1,1,1,1]],['ISO 19650 (BIM)','bim',[0,0,0,0,1]]];
+  return '<h1>Panel general del SIG</h1><p class="lead">Vista única de todo el sistema. Los indicadores se calculan a partir de los registros; no se muestran datos que no estén cargados.</p>'+
+  '<div class="kpis">'+
+    kpi(abiertas,'NC abiertas o en tratamiento',abiertas?'warn':'')+
+    kpi(vencidas.length,'NC con plazo vencido',vencidas.length?'bad':'')+
+    kpi(eficacia.length,'NC pendientes de verificar eficacia',eficacia.length?'warn':'')+
+    kpi(altos,'Riesgos con nivel ≥ 15 (umbral provisional)',altos?'bad':'')+
+    kpi(legPend.length,'Requisitos legales sin evidencias',legPend.length?'warn':'')+
+    kpi(docsRev.length,'Documentos en revisión o por verificar',docsRev.length?'warn':'')+
+    kpi(formPlan,'Acciones formativas planificadas')+
+    kpi(comPrev,'Comunicaciones pendientes')+
+  '</div>'+
+  '<div class="card"><h2>Alertas</h2>'+(alertas.length?alertas.map(a=>'<div class="alert">'+a+'</div>').join(''):'<p class="empty" style="padding:6px 0">Sin alertas con los datos cargados.</p>')+'</div>'+
+  '<div class="card scroll"><h2>Cobertura por norma</h2><table class="mat"><thead><tr><th>Módulo</th>'+NORMAS.map(n=>'<th>ISO '+n+'</th>').join('')+'</tr></thead><tbody>'+
+  mat.map(([t,id,f])=>'<tr><td><a href="#'+id+'" style="color:inherit">'+t+'</a></td>'+f.map(x=>'<td class="dot">'+(x?'●':'')+'</td>').join('')+'</tr>').join('')+
+  '</tbody></table><p class="note">Aplicabilidad orientativa: confirmar con el alcance de cada sistema.</p></div>'+
+  '<div class="card"><h2>Normas del sistema</h2>'+NORMAS.map(n=>'<span class="tag">'+(n==='19650'?'ISO 19650':'ISO '+n)+'</span>').join('')+'</div>';
+}
+
+function init(){
+  document.getElementById('v-panel').innerHTML=vistaPanel();
+  Object.keys(ENL).forEach(id=>document.getElementById('v-'+id).innerHTML=vistaEnlace(id));
+  document.getElementById('v-bim').innerHTML=vistaEnlace('bim');
+  document.getElementById('v-dafo').innerHTML=vistaDafo();
+  Object.keys(MODULOS).forEach(id=>{if(id==='nc'||id==='legales')return;document.getElementById('v-'+id).innerHTML=vistaModulo(id);refresh(id);});
+  route();
+}
+function refreshPanel(){document.getElementById('v-panel').innerHTML=vistaPanel();}
+
+function route(){
+  let h=location.hash.slice(1)||'panel';
+  if(!document.getElementById('v-'+h))h='panel';
+  document.querySelectorAll('.vista').forEach(v=>v.classList.toggle('on',v.id==='v-'+h));
+  document.querySelectorAll('.side nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+h));
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+
+document.querySelector('main').addEventListener('submit',e=>{
+  const f=e.target.closest('form[data-form]');if(!f)return;
+  e.preventDefault();
+  const id=f.dataset.form,m=MODULOS[id],fd=new FormData(f),r={id:uid()};
+  m.cols.forEach(c=>r[c.k]=(fd.get(c.k)||'').toString());
+  const first=m.cols[0].k;
+  if(!r[first].trim()){f.querySelector('[name="'+first+'"]').focus();return;}
+  rows(id).push(r);save();refresh(id);refreshPanel();f.reset();
+  f.querySelector('[name="'+first+'"]').focus();
+});
+document.querySelector('main').addEventListener('click',e=>{
+  const del=e.target.closest('[data-del]');
+  if(del){
+    if(!del.dataset.armed){del.dataset.armed='1';del.textContent='¿Confirmar?';del.classList.add('danger');return;}
+    const [id,rid]=del.dataset.del.split('|');
+    S[id]=rows(id).filter(r=>r.id!==rid);save();refresh(id);refreshPanel();return;
+  }
+  const cp=e.target.closest('[data-copy]');
+  if(cp){
+    const id=cp.dataset.copy;
+    navigator.clipboard.writeText(csv(id)).then(()=>{cp.textContent='Copiado';setTimeout(()=>cp.textContent='Copiar como CSV',1500)}).catch(()=>{cp.textContent='No se pudo copiar'});
+  }
+});
+document.querySelector('main').addEventListener('input',e=>{
+  const k=e.target.dataset.dafo;if(!k)return;
+  S.dafo=S.dafo||{};S.dafo[k]=e.target.value;save();
+});
+
+(function(){
+const R=[
+["RES-0001",2024,12,10,"SJ","170904",0,"3611116407",null,6.96,"S","FME","R"],
+["RES-0002",2025,1,8,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0003",2025,1,8,"SSR","170904",0,"179414",6,9.6,"S","FAM","R"],
+["RES-0004",2025,1,9,"SJ","170904",0,"3611155565",null,5,"S","FME","I"],
+["RES-0005",2025,1,14,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0006",2025,1,14,"MON","170904",0,"3611160679",null,7.32,"S","FME","I"],
+["RES-0007",2025,1,17,"SJ","170904",0,"3611166223",null,6.18,"S","FME","R"],
+["RES-0008",2025,1,20,"MON","170904",0,"3611166228",null,76,"S","FME","I"],
+["RES-0009",2025,1,21,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0010",2025,1,23,"SJ","170904",0,"3611175055",5,6.5,"S","FME","I"],
+["RES-0011",2025,1,28,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0012",2025,1,28,"MON","170904",0,"3611181579",6,7.8,"S","FME","I"],
+["RES-0013",2025,1,30,"MON","200301",0,"3611183036",0.604,0.151,"S","FME","R"],
+["RES-0014",2025,1,30,"MON","200101",0,"3611183038",0.75,0.075,"S","FME","R"],
+["RES-0015",2025,1,31,"MON","170904",0,"3611213337",7,9.1,"S","FME","R"],
+["RES-0016",2025,1,31,"MON","170904",0,"3611189298",6,7.8,"S","FME","I"],
+["RES-0017",2025,2,4,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0018",2025,2,7,"SSR","170904",0,"181585",6,9.6,"S","FAM","R"],
+["RES-0019",2025,2,10,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0020",2025,2,17,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0021",2025,2,18,"MON","170904",0,"3611213337",7,9.1,"S","FME","R"],
+["RES-0022",2025,2,18,"MON","200301",0,"3611214846",0.52,0.13,"S","FME","R"],
+["RES-0023",2025,2,21,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0024",2025,2,24,"MON","170904",0,"3611222088",7,9.1,"S","FME","R"],
+["RES-0025",2025,2,25,"MON","200101",0,"3611211358",2.8,0.28,"S","FME","R"],
+["RES-0026",2025,2,27,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0027",2025,3,4,"MON","170904",0,"665",9,10,"S","ADEC","I"],
+["RES-0028",2025,3,6,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0029",2025,3,10,"MON","170904",0,"897",9,11,"S","ADEC","I"],
+["RES-0030",2025,3,11,"SSR","170904",0,"183602",6,9.6,"S","FAM","R"],
+["RES-0031",2025,3,14,"MON","170904",0,"712",9,10,"S","ADEC","I"],
+["RES-0032",2025,3,19,"MON","170904",0,"719",9,11,"S","ADEC","I"],
+["RES-0033",2025,3,22,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0034",2025,3,25,"MON","170904",0,"682",9,10,"S","ADEC","I"],
+["RES-0035",2025,3,25,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0036",2025,3,28,"MON","200101",0,"3611273915",0.61,0.061,"S","FME","R"],
+["RES-0037",2025,3,28,"MON","200301",0,"3611273913",0.484,0.121,"S","FME","R"],
+["RES-0038",2025,3,28,"MON","200108",0,"3611273911",0.8,0.4,"S","FME","R"],
+["RES-0039",2025,3,28,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0040",2025,4,2,"MON","170904",0,"661",9,11,"S","ADEC","I"],
+["RES-0041",2025,4,3,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0042",2025,4,10,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0043",2025,4,14,"MON","170904",0,"692",9,11,"S","ADEC","I"],
+["RES-0044",2025,4,14,"MON","200301",0,"3611297640",0.544,0.136,"S","FME","R"],
+["RES-0045",2025,4,15,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0046",2025,4,16,"MON","170904",0,"674",9,10,"S","ADEC","I"],
+["RES-0047",2025,4,21,"SSR","170904",0,"186054",6,9.6,"S","FAM","R"],
+["RES-0048",2025,4,22,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0049",2025,4,22,"SSR","170904",0,"186055",6,9.6,"S","FAM","R"],
+["RES-0050",2025,4,24,"MON","200101",0,"1384411-B",0.9,0.09,"S","ECO","I"],
+["RES-0051",2025,4,24,"MON","170904",0,"603",9,11,"S","ADEC","I"],
+["RES-0052",2025,4,28,"MON","170904",0,"647",9,10,"S","ADEC","I"],
+["RES-0053",2025,5,2,"MON","170904",0,"1036",9,11,"S","ADEC","I"],
+["RES-0054",2025,5,5,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0055",2025,5,7,"MON","170904",0,"1044",9,10,"S","ADEC","I"],
+["RES-0056",2025,5,8,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0057",2025,5,8,"MON","200301",0,"3611329667",0.872,0.218,"S","FME","R"],
+["RES-0058",2025,5,8,"MON","200101",0,"3611329670",2.18,0.218,"S","FME","R"],
+["RES-0059",2025,5,12,"MON","170904",0,"1050",9,11,"S","ADEC","I"],
+["RES-0060",2025,5,15,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0061",2025,5,21,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0062",2025,5,23,"MON","200301",0,"3611352581",0.696,0.174,"S","FME","R"],
+["RES-0063",2025,5,28,"MON","170904",0,"1025",9,11,"S","ADEC","I"],
+["RES-0064",2025,5,28,"MON","170904",0,"1011",9,10,"S","ADEC","I"],
+["RES-0065",2025,5,29,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0066",2025,6,3,"MON","200101",0,"3611368078",1.29,0.129,"S","FME","R"],
+["RES-0067",2025,6,4,"MON","170904",0,"2081",9,10,"S","ADEC","I"],
+["RES-0068",2025,6,5,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0069",2025,6,5,"MON","200101",0,"3611372121",0.7,0.07,"S","FME","R"],
+["RES-0070",2025,6,6,"MON","200108",0,"3611372119",0.8,0.4,"S","FME","R"],
+["RES-0071",2025,6,9,"MON","170904",0,"2229",9,11,"S","ADEC","I"],
+["RES-0072",2025,6,10,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0073",2025,6,12,"MON","170904",0,"2087",9,10,"S","ADEC","I"],
+["RES-0074",2025,6,17,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0075",2025,6,19,"MON","200101",0,"3611391023",0.95,0.095,"S","FME","R"],
+["RES-0076",2025,6,20,"MON","200301",0,"3611394525",0.576,0.144,"S","FME","R"],
+["RES-0077",2025,6,23,"MON","170904",0,"2231",9,11,"S","ADEC","I"],
+["RES-0078",2025,6,23,"MON","170904",0,"2131",5,7,"S","ADEC","I"],
+["RES-0079",2025,6,25,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0080",2025,6,30,"MON","170904",0,"2236",9,10,"S","ADEC","I"],
+["RES-0081",2025,7,1,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0082",2025,7,7,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0083",2025,7,11,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0084",2025,7,14,"MON","170904",0,"2038",9,11,"S","ADEC","I"],
+["RES-0085",2025,7,15,"MON","200301",0,"3611426816",0.944,0.236,"S","FME","R"],
+["RES-0086",2025,7,15,"MON","200108",0,"3611426818",0.8,0.4,"S","FME","R"],
+["RES-0087",2025,7,15,"MON","200101",0,"3611426844",0.59,0.059,"S","FME","R"],
+["RES-0088",2025,7,17,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0089",2025,7,24,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0090",2025,7,29,"MON","170904",0,"1088",9,10,"S","ADEC","I"],
+["RES-0091",2025,7,31,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0092",2025,8,1,"MON","200108",0,"3611453375",0.8,0.4,"S","FME","R"],
+["RES-0093",2025,8,1,"MON","200101",0,"3611453377",2.31,0.231,"S","FME","R"],
+["RES-0094",2025,8,4,"MON","170904",0,"1386",5,6,"S","ADEC","I"],
+["RES-0095",2025,8,5,"MON","170904",0,"1490",9,11,"S","ADEC","I"],
+["RES-0096",2025,8,7,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0097",2025,8,11,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0098",2025,8,13,"MON","200301",0,"3611471292",0.62,0.155,"S","FME","R"],
+["RES-0099",2025,8,13,"MON","200101",0,"3611471479",0.78,0.078,"S","FME","R"],
+["RES-0100",2025,8,18,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0101",2025,8,28,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0102",2025,8,29,"MON","170904",0,"1283",9,10,"S","ADEC","I"],
+["RES-0103",2025,9,3,"MON","170904",0,"1066",9,11,"S","ADEC","I"],
+["RES-0104",2025,9,4,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0105",2025,9,12,"MON","200301",0,"3611507496",1.532,0.383,"S","FME","R"],
+["RES-0106",2025,9,12,"MON","200101",0,"3611507498",1.91,0.191,"S","FME","R"],
+["RES-0107",2025,9,16,"MON","170904",0,"1094",9,10,"S","ADEC","I"],
+["RES-0108",2025,9,16,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0109",2025,9,22,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0110",2025,9,23,"MON","170904",0,"1359",5,7,"S","ADEC","I"],
+["RES-0111",2025,9,23,"MON","170904",0,"1098",9,11,"S","ADEC","I"],
+["RES-0112",2025,9,25,"MON","170904",0,"1288",9,10,"S","ADEC","I"],
+["RES-0113",2025,9,26,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0114",2025,10,1,"MON","170904",0,"1292",9,11,"S","ADEC","I"],
+["RES-0115",2025,10,3,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0116",2025,10,3,"MON","170904",0,"1294",9,10,"S","ADEC","I"],
+["RES-0117",2025,10,6,"MON","200101",0,"3611540997",1.5,0.15,"S","FME","R"],
+["RES-0118",2025,10,6,"MON","200301",0,"3611540995",1.196,0.299,"S","FME","R"],
+["RES-0119",2025,10,8,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0120",2025,10,8,"MON","170904",0,"1268",9,11,"S","ADEC","I"],
+["RES-0121",2025,10,15,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0122",2025,10,16,"MON","170904",0,"1297",9,10,"S","ADEC","I"],
+["RES-0123",2025,10,20,"MON","170904",0,"1752",9,10,"S","ADEC","I"],
+["RES-0124",2025,10,21,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0125",2025,10,23,"MON","200301",0,"3611572400",0.64,0.16,"S","FME","R"],
+["RES-0126",2025,10,23,"MON","200101",0,"3611572402",0.8,0.08,"S","FME","R"],
+["RES-0127",2025,10,24,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0128",2025,10,27,"MON","170904",0,"1986",9,11,"S","ADEC","I"],
+["RES-0129",2025,10,29,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0130",2025,10,31,"MON","170904",0,"1990",9,11,"S","ADEC","I"],
+["RES-0131",2025,11,3,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0132",2025,11,6,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0133",2025,11,6,"MON","200101",0,"3611592866",0.74,0.074,"S","FME","R"],
+["RES-0134",2025,11,10,"MON","170904",0,"A-152577",9,10,"S","ADEC","I"],
+["RES-0135",2025,11,13,"MON","170904",0,"A-152582",9,11,"S","ADEC","I"],
+["RES-0136",2025,11,14,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0137",2025,11,14,"MON","170904",0,"A-158847",5,6,"S","ADEC","I"],
+["RES-0138",2025,11,17,"MON","200301",0,"3611608363",0.664,0.166,"S","FME","R"],
+["RES-0139",2025,11,17,"MON","200108",0,"3611608365",0.8,0.4,"S","FME","R"],
+["RES-0140",2025,11,19,"MON","170904",0,"A-152588",9,10,"S","ADEC","I"],
+["RES-0141",2025,11,20,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0142",2025,11,26,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0143",2025,11,26,"MON","170904",0,"A-152599",9,11,"S","ADEC","I"],
+["RES-0144",2025,12,1,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0145",2025,12,3,"MON","170904",0,"A-159213",9,10,"S","ADEC","I"],
+["RES-0146",2025,12,5,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0147",2025,12,5,"MON","200101",0,"3611635645",0.4,0.04,"S","FME","R"],
+["RES-0148",2025,12,5,"MON","200301",0,"3611635643",0.32,0.08,"S","FME","R"],
+["RES-0149",2025,12,11,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0150",2025,12,17,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0151",2025,12,17,"MON","170904",0,"A-159234",9,11,"S","ADEC","I"],
+["RES-0152",2025,12,23,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0153",2025,12,23,"MON","200101",0,"3611662742",1.28,0.128,"S","FME","R"],
+["RES-0154",2025,12,23,"MON","200301",0,"3611660378",0.512,0.128,"S","FME","R"],
+["RES-0155",2025,12,30,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0156",2026,1,7,"SSR","170101",0,"202833",6,13.2,"S","FAM","R"],
+["RES-0157",2026,1,12,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0158",2026,1,16,"MON","200101",0,"3611692870",0.08,0.07,"S","FME","R"],
+["RES-0159",2026,1,16,"MON","200301",0,"3611692868",0.556,0.139,"S","FME","R"],
+["RES-0160",2026,1,20,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0161",2026,1,22,"MON","170904",0,"A-158847",5,7,"S","ADEC","I"],
+["RES-0162",2026,2,5,"LLA","200101",0,"1466506-B",0.125,0.1,"S","ECO","I"],
+["RES-0163",2026,2,5,"MON","200101",0,"3611723343",0.06,0.049,"S","FME","R"],
+["RES-0164",2026,2,5,"MON","200301",0,"3611723341",0.388,0.097,"S","FME","R"],
+["RES-0165",2026,2,9,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0166",2026,2,11,"SSR","200101",0,"117716-1",1.25,1,"S","DAT","R"],
+["RES-0167",2026,2,11,"SSR","200139",0,"117716-2",null,1,"S","DAT","R"],
+["RES-0168",2026,2,12,"MON","200108",0,"3611731773",0.8,0.4,"S","FME","R"],
+["RES-0169",2026,2,16,"SSR","170904",0,"205132",6,9.6,"S","FAM","R"],
+["RES-0170",2026,2,16,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0171",2026,2,23,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0172",2026,2,25,"MON","200301",0,"3611754538",1.072,0.268,"S","FME","R"],
+["RES-0173",2026,2,25,"MON","170904",0,"A-162762",9,10,"S","ADEC","I"],
+["RES-0174",2026,3,4,"MON","170904",0,"A-162768",9,11,"S","ADEC","I"],
+["RES-0175",2026,3,9,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0176",2026,3,11,"SSR","170904",0,"206932",6,9.6,"S","FAM","R"],
+["RES-0177",2026,3,16,"MON","200301",0,"3611782965",0.312,0.078,"S","FME","R"],
+["RES-0178",2026,3,16,"MON","200101",0,"3611782967",0.04,0.039,"S","FME","R"],
+["RES-0179",2026,3,17,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0180",2026,3,17,"MON","200101",0,"1479002-B",1.3,0.13,"S","ECO","I"],
+["RES-0181",2026,3,24,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0182",2026,3,30,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0183",2026,4,1,"SSR","170904",0,"208400",6,9.6,"S","FAM","R"],
+["RES-0184",2026,4,1,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0185",2026,4,9,"MON","170101",0,"A-164251",10,22,"S","ADEC","I"],
+["RES-0186",2026,4,9,"VIT","170101",0,"2602303",4.217,10.12,"S","ESC","R"],
+["RES-0187",2026,4,10,"MON","200101",0,"3611821431",0.07,0.06,"S","FME","R"],
+["RES-0188",2026,4,10,"MON","200301",0,"3611819328",0.716,0.179,"S","FME","R"],
+["RES-0189",2026,4,13,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0190",2026,4,13,"MON","200108",0,"3611824514",0.8,0.4,"S","FME","R"],
+["RES-0191",2026,4,16,"SSR","170904",0,"209213",6,9.6,"S","FAM","R"],
+["RES-0192",2026,4,20,"MON","170101",0,"A-164268",10,22,"S","ADEC","I"],
+["RES-0193",2026,4,21,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0194",2026,4,23,"SSR","170904",0,"209744",6,9.6,"S","FAM","R"],
+["RES-0195",2026,4,24,"MON","200301",0,"3611841244",0.504,0.126,"S","FME","R"],
+["RES-0196",2026,4,24,"MON","200101",0,"3611841242",0.079,0.063,"S","FME","R"],
+["RES-0197",2026,4,27,"MON","170101",0,"A-164277",10,22,"S","ADEC","I"],
+["RES-0198",2026,4,27,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0199",2026,4,29,"VIT","170101",0,"2602784",4.233,10.16,"S","ESC","R"],
+["RES-0200",2026,5,4,"MON","170101",0,"A-164280",10,22,"S","ADEC","I"],
+["RES-0201",2026,5,5,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0202",2026,5,11,"MON","170101",0,"A-164286",10,22,"S","ADEC","I"],
+["RES-0203",2026,5,11,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0204",2026,5,11,"VIT","170101",0,"2603304",4.267,10.24,"S","ESC","R"],
+["RES-0205",2026,5,12,"MM","200101",0,"1493528",0.025,0.02,"S","ECO","R"],
+["RES-0206",2026,5,12,"MM","200139",0,"1493529",null,0.01,"S","ECO","R"],
+["RES-0207",2026,5,12,"MON","200301",0,"3611869055",0.44,0.11,"S","FME","I"],
+["RES-0208",2026,5,12,"MON","200101",0,"3611869057",0.069,0.055,"S","FME","I"],
+["RES-0209",2026,5,14,"MM","200101",0,"20260505-43567",0.2,0.02,"S","ECO","R"],
+["RES-0210",2026,5,14,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0211",2026,5,18,"SSR","170904",0,"211252",6,9.6,"S","FAM","R"],
+["RES-0212",2026,5,20,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0213",2026,5,21,"MON","170101",0,"A-170151",10,22,"S","ADEC","I"],
+["RES-0214",2026,5,25,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0215",2026,5,25,"VIT","170101",0,"2603463",3.558,8.54,"S","ESC","R"],
+["RES-0216",2026,5,26,"MON","170101",0,"A-170162",9,19.8,"S","ADEC","I"],
+["RES-0217",2026,5,27,"MON","200301",0,"3611890613",0.748,0.187,"S","FME","I"],
+["RES-0218",2026,5,27,"MON","200101",0,"3611890615",1.25,0.093,"S","FME","I"],
+["RES-0219",2026,5,28,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0220",2026,6,2,"VIT","170101",0,"2603684",3.5,8.4,"S","ESC","R"],
+["RES-0221",2026,6,3,"SSR","200139",0,"121572-1",null,1,"S","DAT","R"],
+["RES-0222",2026,6,3,"SSR","200101",0,"121572-2",1.25,1,"S","DAT","R"],
+["RES-0223",2026,6,3,"CUB","170904",0,"",null,14.4,"S","ROCA","I"],
+["RES-0224",2026,6,3,"MON","200108",0,"3611896526",0.8,0.4,"S","FME","I"],
+["RES-0225",2026,6,9,"CUB","170904",0,"",null,14.4,"S","ROCA","I"],
+["RES-0226",2026,6,10,"SSR","170101",0,"213119",6,13.2,"S","FAM","R"],
+["RES-0227",2026,6,10,"MON","200301",0,"3611914815",0.58,0.145,"S","FME","I"],
+["RES-0228",2026,6,10,"MON","200101",0,"3611914817",0.091,0.073,"S","FME","I"],
+["RES-0229",2026,6,11,"SSR","170904",0,"213279",6,9.6,"S","FAM","R"],
+["RES-0230",2026,6,12,"SSR","170101",0,"213333",6,13.2,"S","FAM","R"],
+["RES-0231",2026,6,16,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0232",2026,6,17,"VIT","170101",0,"2604211",4.242,10.18,"S","ESC","R"],
+["RES-0233",2026,6,18,"LLA","200101",0,"1499727-B",0.125,0.1,"S","ECO","I"],
+["RES-0234",2026,6,23,"SSR","170101",0,"214160",6,13.2,"S","FAM","R"],
+["RES-0235",2026,6,25,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0236",2026,6,25,"MON","200301",0,"3611937127",0.356,0.089,"S","FME","I"],
+["RES-0237",2026,6,25,"MON","200101",0,"3611937129",0.055,0.044,"S","FME","I"],
+["RES-0238",2026,6,30,"CUB","200101",0,"1510173",0.025,0.02,"S","ECO","I"],
+["RES-0239",2026,7,2,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0240",2026,7,2,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0241",2026,7,6,"SSR","170904",0,"215045",6,9.6,"S","FAM","R"],
+["RES-0242",2026,7,7,"MON","200301",0,"3612012926",0.116,0.093,"S","FME","I"],
+["RES-0243",2026,7,7,"MON","200101",0,"3612012928",0.059,0.047,"S","FME","I"],
+["RES-0244",2026,7,7,"MM","200101",0,"1510610",0.025,0.02,"S","ECO","R"],
+["RES-0245",2026,7,7,"VIT","170101",0,"2604776",4.233,10.16,"S","ESC","R"],
+["RES-0246",2026,7,8,"CAR","150110",1,"20260706132743124",null,0.2,"S","XUQ","R"],
+["RES-0247",2026,7,8,"CAR","160506",1,"20260706132743124",null,0.2,"S","XUQ","R"],
+["RES-0248",2026,7,8,"CAR","200101",0,"20260706132743124",0.188,0.15,"S","XUQ","R"],
+["RES-0249",2026,7,8,"CAR","160506",1,"20260706132743124",null,0.2,"S","XUQ","R"],
+["RES-0250",2026,7,8,"CAR","160603",1,"20260706132743124",null,0.4,"S","XUQ","R"],
+["RES-0251",2026,7,8,"CAR","160603",1,"20260706132743124",null,0.005,"S","XUQ","R"],
+["RES-0252",2026,7,10,"SSR","170101",0,"215514",6,13.2,"S","FAM","R"],
+["RES-0253",2026,7,10,"SSR","170904",0,"215505",6,9.6,"S","FAM","R"],
+["RES-0254",2026,7,13,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0255",2026,7,14,"VIT","170101",0,"2605028",4.333,10.4,"S","ESC","R"],
+["RES-0256",2026,7,21,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0257",2026,7,22,"MON","200301",0,"3612036432",0.5,0.125,"S","FME","I"],
+["RES-0258",2026,7,22,"MON","200101",0,"3612036434",0.63,0.063,"S","FME","I"],
+["RES-0259",2026,7,23,"SSR","170101",0,"216409",6,13.2,"S","FAM","R"],
+["RES-0260",2026,7,28,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0261",2026,8,4,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0262",2026,8,4,"VIT","170101",0,"2605547",4.308,10.34,"S","ESC","R"],
+["RES-0263",2026,8,5,"SSR","170904",0,"217111",6,9.6,"S","FAM","R"],
+["RES-0264",2026,8,11,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0265",2026,8,12,"MON","200101",0,"3612069781",1.08,0.108,"S","FME","I"],
+["RES-0266",2026,8,12,"MON","200301",0,"3612069779",0.868,0.217,"S","FME","I"],
+["RES-0267",2026,8,18,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0268",2026,8,18,"VIT","170101",0,"2605807",4.183,10.04,"S","ESC","R"],
+["RES-0269",2026,8,19,"SSR","170101",0,"218157",6,14.4,"S","FAM","R"],
+["RES-0270",2026,8,20,"VIT","170101",0,"2605855",3.517,8.44,"S","ESC","R"],
+["RES-0271",2026,8,24,"VIT","170101",0,"2605902",4.35,10.44,"S","ESC","R"],
+["RES-0272",2026,8,25,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0273",2026,8,25,"SSR","170101",0,"218511",6,14.4,"S","FAM","R"],
+["RES-0274",2026,8,25,"SSR","170904",0,"218547",6,9.6,"S","FAM","R"],
+["RES-0275",2026,8,26,"SSR","200101",0,"125073-2",0.01,0.001,"S","DAT","R"],
+["RES-0276",2026,8,26,"SSR","200139",0,"125073-1",0.02,0.001,"S","DAT","R"],
+["RES-0277",2026,8,31,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0278",2026,9,1,"VIT","170101",0,"2606062",2.892,6.94,"S","ESC","R"],
+["RES-0279",2026,9,4,"MON","200101",0,"3612103643",0.6,0.06,"S","FME","I"],
+["RES-0280",2026,9,4,"MON","200301",0,"3612103641",0.793,0.119,"S","FME","I"],
+["RES-0281",2026,9,8,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0282",2026,9,16,"MON","170107",0,"2026/GV/296892",null,10.34,"P","CGM","I"],
+["RES-0283",2026,9,17,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0284",2026,9,17,"MON","200301",0,"3612125083",0.528,0.132,"S","FME","I"],
+["RES-0285",2026,9,19,"MON","200101",0,"3612125085",0.06,0.006,"S","FME","I"],
+["RES-0286",2026,9,24,"SSR","170904",0,"220730",6,9.6,"S","FAM","R"],
+["RES-0287",2026,9,24,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0288",2026,9,29,"MON","200101",0,"3612143846",null,0.061,"S","FME","I"],
+["RES-0289",2026,9,29,"MON","200301",0,"3612143844",null,0.122,"S","FME","I"],
+["RES-0290",2026,9,29,"MON","170107",0,"2026/GV/298649",null,9.68,"P","CGM","I"],
+["RES-0291",2026,9,30,"MON","170904",0,"3612144201",null,2.02,"S","FME","R"],
+["RES-0292",2026,10,1,"CUB","170904",0,"",8,14.4,"E","ROCA","I"],
+["RES-0293",2026,10,2,"SSR","170101",0,"221464",6,14.4,"S","FAM","R"],
+["RES-0294",2026,10,6,"MON","200101",0,"20261001-287140",null,0.095,"S","ECO","I"],
+["RES-0295",2026,10,7,"SSR","170101",0,"221759",6,14.4,"S","FAM","R"],
+["RES-0296",2026,10,7,"SSR","170904",0,"221770",6,9.6,"S","FAM","R"],
+["RES-0297",2026,10,7,"VIT","170101",0,"S/N",null,9.6,"S","ESC","R"],
+["RES-0298",2026,10,8,"VIT","170101",0,"2607122",2.817,6.76,"S","ESC","R"],
+["RES-0299",2026,11,2,"VIT","170101",0,"S/N",null,9.6,"S","ESC","R"],
+["RES-0300",2026,11,9,"MON","170904",0,"3612209546",null,1.8,"S","FME","I"],
+["RES-0301",2026,11,10,"VIT","170101",0,"S/N",null,9.6,"S","ESC","R"],
+["RES-0302",2026,11,12,"VIT","170101",0,"S/N",null,9.6,"S","ESC","R"],
+["RES-0303",2026,11,13,"SSR","170904",0,"224024",null,10.8,"S","FAM","R"],
+["RES-0304",2026,11,16,"CUB","170904",0,"",null,14.4,"S","ROCA","I"],
+["F-4",2026,10,30,"MON","200101",0,"3612196241",null,0.099,"P","FME","I"],
+["F-5",2026,11,10,"MON","200301",0,"3612213501",null,0.236,"P","FME","I"],
+["F-6",2026,11,10,"MON","200101",0,"3612213503",null,0.118,"P","FME","I"],
+["F-7",2026,11,17,"MON","200301",0,"3612225498",null,0.16,"P","FME","I"],
+["F-8",2026,11,17,"MON","200101",0,"3612225500",null,0.08,"P","FME","I"]
+];
+const SEDE={SJ:"Barcelona - Sant Just",CUB:"Barcelona - Cubelles",MON:"Barcelona - Montcada i Reixac",LLA:"Barcelona - Llacuna",SSR:"Madrid - San Sebastián de los Reyes",MM:"Madrid - Marqués de Monteagudo",VIT:"Álava - Vitoria",CAR:"Valencia - Carlet"};
+const SEDE_COL={SJ:"#7a5195",CUB:"#0e5a6b",MON:"#ef5675",LLA:"#c26a00",SSR:"#2e7d4f",MM:"#a1307a",VIT:"#1c7a7a",CAR:"#8a6d00"};
+const LER={"170904":"RCD mezclados (17 09 04)","200301":"Mezclas municipales (20 03 01)","200101":"Papel y cartón (20 01 01)","200108":"Biorresiduos (20 01 08)","170101":"Hormigón (17 01 01)","200139":"Plásticos (20 01 39)","150110":"Envases contaminados (15 01 10)","160506":"Químicos de laboratorio (16 05 06)","160603":"Pilas con mercurio (16 06 03)","170107":"Mezclas hormigón/cerámicos (17 01 07)"};
+const EMP={FME:"Foment de Reciclatge",ROCA:"Roca Gómez",FAM:"Faustino Mateo e Hijos",ADEC:"ADEC Global",ECO:"Ecologic SLU",ESC:"Escor",DAT:"Dataeraser",XUQ:"Recuperaciones Xúquer",CGM:"Centre de Gestió Mediambiental"};
+const ORI={S:"Sin verificar",E:"Estimada",P:"Pesada"};
+const EST={R:"Revisar",I:"Incompleto"};
+const MES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const $=id=>document.getElementById('rs-'+id);
+const st={year:"all",sede:"all",ler:"all",gran:"mes",q:"",show:60};
+const fmt=(n,d=1)=>n.toLocaleString("es-ES",{minimumFractionDigits:d,maximumFractionDigits:d});
+function pass(r,ignoreSede){
+  if(st.year!=="all" && String(r[1])!==st.year) return false;
+  if(!ignoreSede && st.sede!=="all" && r[4]!==st.sede) return false;
+  if(st.ler!=="all" && r[5]!==st.ler) return false;
+  return true;
+}
+function rows(ignoreSede){return R.filter(r=>pass(r,ignoreSede));}
+function init(){
+  const years=[...new Set(R.map(r=>r[1]))].sort();
+  $("fYear").innerHTML='<option value="all">Todos</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join("");
+  $("fSede").innerHTML='<option value="all">Todas las sedes</option>'+Object.keys(SEDE).map(k=>`<option value="${k}">${SEDE[k]}</option>`).join("");
+  $("fLer").innerHTML='<option value="all">Todos los tipos</option>'+Object.keys(LER).map(k=>`<option value="${k}">${LER[k]}</option>`).join("");
+  $("fYear").onchange=e=>{st.year=e.target.value;st.show=60;render();};
+  $("fSede").onchange=e=>{st.sede=e.target.value;st.show=60;render();};
+  $("fLer").onchange=e=>{st.ler=e.target.value;st.show=60;render();};
+  $("gMes").onclick=()=>{st.gran="mes";$("gMes").classList.add("on");$("gTri").classList.remove("on");render();};
+  $("gTri").onclick=()=>{st.gran="tri";$("gTri").classList.add("on");$("gMes").classList.remove("on");render();};
+  $("q").oninput=e=>{st.q=e.target.value.toLowerCase();st.show=60;renderList();};
+  render();
+}
+function kpis(){
+  const f=rows(false);
+  const t=f.reduce((a,r)=>a+(r[9]||0),0);
+  const m3=f.reduce((a,r)=>a+(r[8]||0),0);
+  const sinAlb=f.filter(r=>!r[7]).length;
+  const sinVer=f.filter(r=>r[10]==="S").length;
+  const inc=f.filter(r=>r[12]==="I").length;
+  const k=[
+    ["Toneladas",fmt(t,2)+" t","Suma de Cantidad (t)","#0e5a6b"],
+    ["Volumen",fmt(m3,1)+" m³","Suma de Volumen (m³)","#7a5195"],
+    ["Retiradas",f.length,"Nº de registros","#2e7d4f"],
+    ["Incompletos",inc,"Registros con datos que faltan","#c62f2f"],
+    ["Sin verificar",sinVer,"Cantidad no pesada o estimada","#c26a00"],
+    ["Sin nº albarán",sinAlb,"Registros sin número de albarán/DI","#8a6d00"]
+  ];
+  $("kpis").innerHTML=k.map(x=>`<div class="rs-kpi" style="--c:${x[3]}"><div class="rs-v">${x[1]}</div><div class="rs-l">${x[0]}</div><div class="rs-s">${x[2]}</div></div>`).join("");
+}
+function sedesCards(){
+  const f=rows(true);
+  $("sedes").innerHTML=Object.keys(SEDE).map(k=>{
+    const g=f.filter(r=>r[4]===k);
+    if(!g.length) return "";
+    const t=g.reduce((a,r)=>a+(r[9]||0),0);
+    const inc=g.filter(r=>r[12]==="I").length, rev=g.filter(r=>r[12]==="R").length;
+    const pI=(inc/g.length)*100, pR=(rev/g.length)*100;
+    const on=st.sede===k;
+    return `<button class="rs-sede" aria-pressed="${on}" style="--c:${SEDE_COL[k]}" onclick="window.rsPickSede('${k}')">
+      <span class="rs-n">${SEDE[k]}</span>
+      <span class="rs-big">${fmt(t,2)} t</span>
+      <span class="rs-note">${g.length} retiradas</span>
+      <span class="rs-bar"><span style="width:${pI}%;background:#c62f2f"></span><span style="width:${pR}%;background:#c26a00"></span><span style="width:${100-pI-pR}%;background:#2e7d4f"></span></span>
+      <span class="rs-chips"><span class="rs-chip" style="background:#fbe3e3;color:#c62f2f">${inc} incompletos</span><span class="rs-chip" style="background:#fdeed6;color:#c26a00">${rev} a revisar</span></span>
+    </button>`;
+  }).join("");
+}
+window.rsPickSede=k=>{st.sede=st.sede===k?"all":k;$("fSede").value=st.sede;st.show=60;render();};
+function chart(){
+  const f=rows(false);
+  let keys=[];
+  if(st.gran==="mes"){
+    if(st.year!=="all") keys=MES.map((m,i)=>({k:st.year+"-"+(i+1),l:m}));
+    else { for(let y=2024;y<=2026;y++) for(let m=1;m<=12;m++){ if(y===2024&&m<12) continue; if(y===2026&&m>11) continue; keys.push({k:y+"-"+m,l:MES[m-1]+" "+String(y).slice(2)}); } }
+  } else {
+    if(st.year!=="all") keys=[1,2,3,4].map(q=>({k:st.year+"-Q"+q,l:"T"+q+" "+String(st.year).slice(2)}));
+    else { [[2024,4],[2025,1],[2025,2],[2025,3],[2025,4],[2026,1],[2026,2],[2026,3],[2026,4]].forEach(([y,q])=>keys.push({k:y+"-Q"+q,l:"T"+q+" "+String(y).slice(2)})); }
+  }
+  const bucket=r=>st.gran==="mes"?(r[1]+"-"+r[2]):(r[1]+"-Q"+Math.ceil(r[2]/3));
+  const sedesUsed=Object.keys(SEDE).filter(k=>f.some(r=>r[4]===k));
+  const data=keys.map(p=>{const o={};sedesUsed.forEach(s=>o[s]=0);f.filter(r=>bucket(r)===p.k).forEach(r=>{o[r[4]]+=(r[9]||0);});return {l:p.l,o,tot:Object.values(o).reduce((a,b)=>a+b,0)};});
+  const max=Math.max(0.001,...data.map(d=>d.tot));
+  const W=900,H=300,pl=50,pb=40,pt=12,pr=10;
+  const bw=(W-pl-pr)/Math.max(1,data.length);
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Toneladas por periodo">`;
+  for(let i=0;i<=4;i++){const v=max*i/4,y=H-pb-(H-pb-pt)*i/4;svg+=`<line x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}" stroke="#dbe2e5"/><text x="${pl-6}" y="${y+4}" font-size="11" text-anchor="end" fill="#5c6b72">${fmt(v,0)}</text>`;}
+  data.forEach((d,i)=>{
+    let y=H-pb;const x=pl+i*bw+bw*0.15,w=bw*0.7;
+    sedesUsed.forEach(s=>{const h=(H-pb-pt)*(d.o[s]/max);if(h>0){y-=h;svg+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${SEDE_COL[s]}"><title>${SEDE[s]} · ${d.l}: ${fmt(d.o[s],2)} t</title></rect>`;}});
+    svg+=`<text x="${x+w/2}" y="${H-pb+14}" font-size="10" text-anchor="middle" fill="#5c6b72">${d.l}</text>`;
+  });
+  svg+=`</svg>`;
+  $("chart").innerHTML=svg||'<div class="rs-note">Sin datos para este filtro.</div>';
+  $("chartTitle").textContent="Toneladas por "+(st.gran==="mes"?"mes":"trimestre")+" y sede";
+  $("legend").innerHTML=sedesUsed.map(s=>`<span><i style="background:${SEDE_COL[s]}"></i>${SEDE[s]}</span>`).join("");
+}
+function matrix(){
+  const f=rows(false);
+  const lers=Object.keys(LER).filter(l=>f.some(r=>r[5]===l));
+  const sedes=Object.keys(SEDE).filter(s=>f.some(r=>r[4]===s));
+  if(!sedes.length){$("matrix").innerHTML='<div class="rs-note">Sin datos.</div>';return;}
+  let h=`<table class="rs-mx"><thead><tr><th>Sede</th>${lers.map(l=>`<th onclick="window.rsPickLer('${l}')" title="Filtrar por este tipo">${LER[l]}</th>`).join("")}<th>Total</th></tr></thead><tbody>`;
+  const tot=lers.map(()=>0);let gt=0;
+  sedes.forEach(s=>{
+    let rt=0;
+    h+=`<tr><td>${SEDE[s]}</td>`;
+    lers.forEach((l,j)=>{const v=f.filter(r=>r[4]===s&&r[5]===l).reduce((a,r)=>a+(r[9]||0),0);rt+=v;tot[j]+=v;h+=`<td class="${st.ler===l?"hi":""}">${v?fmt(v,2):"–"}</td>`;});
+    gt+=rt;h+=`<td><b>${fmt(rt,2)}</b></td></tr>`;
+  });
+  h+=`<tr><td><b>Total</b></td>${tot.map(v=>`<td><b>${fmt(v,2)}</b></td>`).join("")}<td><b>${fmt(gt,2)}</b></td></tr></tbody></table>`;
+  $("matrix").innerHTML=h;
+}
+window.rsPickLer=l=>{st.ler=st.ler===l?"all":l;$("fLer").value=st.ler;st.show=60;render();};
+function renderList(){
+  const f=rows(false).filter(r=>!st.q||(r[0]+" "+r[7]+" "+EMP[r[11]]+" "+LER[r[5]]+" "+SEDE[r[4]]).toLowerCase().includes(st.q)).sort((a,b)=>(b[1]-a[1])||(b[2]-a[2])||(b[3]-a[3]));
+  const shown=f.slice(0,st.show);
+  const estPill=e=>`<span class="rs-pill ${e==="I"?"rs-p-i":"rs-p-r"}">${EST[e]}</span>`;
+  $("list").innerHTML=`<thead><tr><th>ID</th><th>Fecha</th><th>Sede</th><th>Tipo</th><th>Empresa</th><th>Albarán / DI</th><th class="rs-num">t</th><th class="rs-num">m³</th><th>Origen</th><th>Estado</th></tr></thead><tbody>`+
+    shown.map(r=>`<tr><td class="rs-id">${r[0]}</td><td class="rs-id">${String(r[3]).padStart(2,"0")}/${String(r[2]).padStart(2,"0")}/${r[1]}</td><td>${SEDE[r[4]]}</td><td>${LER[r[5]]}</td><td>${EMP[r[11]]}</td><td class="rs-id">${r[7]||'<span style="color:#c62f2f">falta</span>'}</td><td class="rs-num">${r[9]==null?"–":fmt(r[9],3)}</td><td class="rs-num">${r[8]==null?"–":fmt(r[8],3)}</td><td>${ORI[r[10]]}</td><td>${estPill(r[12])}</td></tr>`).join("")+
+    `</tbody>`;
+  $("more").innerHTML=f.length>shown.length?`<button onclick="window.rsMore()">Mostrar más (${f.length-shown.length} restantes)</button>`:`<div class="rs-note">${f.length} registros con los filtros actuales.</div>`;
+}
+window.rsMore=()=>{st.show+=60;renderList();};
+function render(){
+  $("fYear").value=st.year;$("fSede").value=st.sede;$("fLer").value=st.ler;
+  kpis();sedesCards();chart();matrix();renderList();
+}
+init();
+})();
+init();
+</script>
+</body>
+</html>
